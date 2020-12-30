@@ -4,14 +4,20 @@
 const Dropdown = (props) =>{
   const {itemZones} =  props;
 
+  const onDropDownCahnge =(e) =>{
+    console.log(e.target.value);
+    //子傳父
+    props.getZone(e.target.value);
+  }
   return(
-    <select>
+    <select onChange={onDropDownCahnge}>
+           {/* selected 要拿掉  ask!*/ }
           <option selected disabled>--請選擇行政區--</option>
            {/* notes:使用 map 會自動 return，但用 forEach 和 for 迴圈不會自動 return，
             因此這邊建議直接使用 map 比較好 */}
           {itemZones.map((zone) =>(
               // itemZones[index] = zone
-            <option value={zone}>{zone}</option>   
+            <option key={zone} value={zone}>{zone}</option>   
             )
           )}
     </select>

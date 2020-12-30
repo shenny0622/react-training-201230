@@ -12,19 +12,25 @@ const App = () =>{
       cards: [],
       error: null,
       isLoaded: false,
-      itemZones:[] //宣告一個新的陣列(不重複區域)
+      itemZones:[],//宣告一個新的陣列(不重複區域)
+      cardsByZone: [],
+      currentZone:''
     });
 
 
 //API 資料
+// 初始值
 useEffect(()=>{
     fetch( 'https://raw.githubusercontent.com/hexschool/KCGTravel/master/datastore_search.json',{method:"GET"})
       .then(res => res.json())
       .then(
         (data) => {
+          //setSte 要更新 state 狀態
           setState({
             isLoaded: true,
             cards: data.result.records,
+            cardsByZone: [],
+            currentZone:'',
             // 過濾重複的區域資料，並存在 itemZones 的新陣列中
             itemZones: data.result.records.map((item)=>(item.Zone)).filter(function(element, index, arr){
                 return arr.indexOf(element) === index;
@@ -41,7 +47,26 @@ useEffect(()=>{
         }
       )
 },[]);
-const { cards } = state;
+
+const getCurrentZone =(zone) =>{
+  console.log('getCurrentZone',zone);
+  // 
+  // 1.fifter 篩選
+  // 2.綁定 state >宣告變數給他一個空陣列
+
+  setState({
+    ...state, // keep 住當前的狀態 aks!
+    currentZone:zone,
+    // 過濾重複的區域資料，並存在 itemZones 的新陣列中
+    cardsByZone: cards.filter(function(element){
+        return element.Zone === zone;
+    })
+
+  });
+}
+
+
+const { cards,itemZones,cardsByZone,currentZone } = state;
 
 
 return (
@@ -49,17 +74,18 @@ return (
       <header className="banner">
         <div className="container">
             <h1>高雄旅遊資訊網</h1>
-            <Dropdown itemZones= {state.itemZones}/>
+            <Dropdown itemZones= {itemZones} getZone={getCurrentZone}/>
             {/* <select id="selectName">
           
             </select> */}
             <div className="menu">
                 <p className="title-menu">熱門行政區</p>
                 <ul className="buttonList">
-                    <li><Buttons content="苓雅區" color="purple" /></li>
-                    <li><Buttons content="三民區" color="orange"/></li>
-                    <li><Buttons content="新興區" color="yellow" /></li>
-                    <li><Buttons content="鹽埕區" color="blue" /></li>
+                  {/*規格 getZone 會觸發getCurrentZone 函式 */}
+                    <li><Buttons content="苓雅區" color="purple" getZone={getCurrentZone}/></li>
+                    <li><Buttons content="三民區" color="orange" getZone={getCurrentZone}/></li>
+                    <li><Buttons content="大樹區" color="yellow" getZone={getCurrentZone}/></li>
+                    <li><Buttons content="六龜區" color="blue" getZone={getCurrentZone}/></li>
                 </ul>
                 {/* <input type="button" value="苓雅區" style={{background:'#8A82CC'}}/>
                 <input type="button" value="三民區" style={{background:'#FFA782'}}/>
@@ -73,15 +99,20 @@ return (
     </header>
     <div className="content container"> 
         <div className="main">
-            <h2 className="title-main">請先選擇區域</h2>
+            <h2 className="title-main">{currentZone}</h2>
             <ul className="list">
+            {cardsByZone.map(function(card){
+                    return <Card key={card.Id} item={card}/>
+                    // 通常 map 要加上 key
+                
+            })}
             {/* 測試用:先撈五筆卡片資料 */}
-            {cards.map(function(card,index){
+            {/* {cards.map(function(card,index){
                 if(index<5)
                     return <Card item={card}/>
                 else
                     return null
-            })}
+            })} */}
             {/* {cards.map((card) =>(
              <Card item={card}/>
             ))}  */}

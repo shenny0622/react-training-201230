@@ -61,7 +61,7 @@ const Card = (props) => {
   return(
     <li className="list-card">
       <div className="img" style={{backgroundImage: `url(${item.Picture1})`}}>
-          <div class="img-title">
+          <div className="img-title">
               <h3 className="title-24px">{item.Name}</h3>
               <p className="title-16px">{item.Zone}</p>
           </div>
